@@ -1,0 +1,19 @@
+﻿@model IEnumerable<Issue>
+
+<div class="panel panel-default">
+    <div class="panel-heading"><span class="badge">@Model.Count()</span> Issues</div>
+    <div class="panel-body">
+        <ul class="list-group">
+            @foreach (var issue in Model)
+            {
+            <li class="list-group-item">
+                <h4 class="list-group-item-heading">@issue.File: @(issue.LineNumber??0) (@issue.IssueType.Severity)</h4>
+                <p class="list-group-item-text"><span class="text-danger">@issue.Message</span>
+                    <br />@issue.IssueType.Category.Description
+                    <br />@issue.IssueType.Description @(string.IsNullOrEmpty(issue.IssueType.WikiUrl) ? $"({issue.IssueType.WikiUrl})" : "")
+                </p>
+            </li>
+            }
+        </ul>
+    </div>
+</div>
