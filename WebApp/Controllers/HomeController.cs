@@ -14,8 +14,8 @@ namespace WebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private ICollection<IssueType.CategoryType> _categories;
-        private ICollection<string> _fileTypes;
+        private readonly ICollection<IssueType.CategoryType> _categories;
+        private readonly ICollection<string> _fileTypes;
         private ICollection<IssueType> _issueTypes;
         private ICollection<Issue> _issues;
 
@@ -97,7 +97,7 @@ namespace WebApp.Controllers
                 return false;
 
             var xEle = XElement.Load(_destinationPath);
-            var validXml = xEle != null && xEle.Element("IssueTypes") != null && xEle.Element("Issues") != null;
+            var validXml = xEle.Element("IssueTypes") != null && xEle.Element("Issues") != null;
 
             var issueTypesValid = validXml && xEle.Element("IssueTypes").HasElements 
                 && xEle.Element("IssueTypes").Elements().Any(x => x.HasAttributes
@@ -183,9 +183,8 @@ namespace WebApp.Controllers
         {
             var ext = $"*{filePath.Substring(filePath.LastIndexOf("."))}";
 
-            if (!_fileTypes.Any(x => x == ext))
+            if (!_fileTypes.Contains(ext))
                 _fileTypes.Add(ext);
-
             return ext;
         }
 
