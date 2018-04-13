@@ -1,19 +1,34 @@
-﻿@model IEnumerable<Issue>
+﻿@{
+    var issues = (IEnumerable<Issue>)ViewBag.Issues;
+    var projectName = (string)ViewBag.ProjectName;
+
+    var i = (int)ViewBag.Number;
+}
 
 <div class="panel panel-default">
-    <div class="panel-heading"><span class="badge">@Model.Count()</span> Issues</div>
-    <div class="panel-body">
-        <ul class="list-group">
-            @foreach (var issue in Model)
-            {
-            <li class="list-group-item">
-                <h4 class="list-group-item-heading">@issue.File: @(issue.LineNumber??0) (@issue.IssueType.Severity)</h4>
-                <p class="list-group-item-text"><span class="text-danger">@issue.Message</span>
-                    <br />@issue.IssueType.Category.Description
-                    <br />@issue.IssueType.Description @(string.IsNullOrEmpty(issue.IssueType.WikiUrl) ? $"({issue.IssueType.WikiUrl})" : "")
-                </p>
-            </li>
-            }
-        </ul>
+    <div class="panel-heading">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse_@i" aria-expanded="true" aria-controls="collapse_@i">
+            @projectName
+            <span class="badge">@issues.Count()</span>
+        </a>
     </div>
+
+    <div id="collapse_@i" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_@i">
+        <div class="panel-body">
+            <ul class="list-group">
+                @foreach (var issue in issues)
+                {
+                    <li class="list-group-item">
+                        <h4 class="list-group-item-heading">@issue.File: @(issue.LineNumber ?? 0) (@issue.IssueType.Severity)</h4>
+                        <p class="list-group-item-text">
+                            <span class="text-danger">@issue.Message</span>
+                            <br />@issue.IssueType.Category.Description
+                            <br />@issue.IssueType.Description @(string.IsNullOrEmpty(issue.IssueType.WikiUrl) ? $"({issue.IssueType.WikiUrl})" : "")
+                        </p>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
 </div>

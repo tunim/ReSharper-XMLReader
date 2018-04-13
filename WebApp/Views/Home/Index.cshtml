@@ -1,63 +1,75 @@
 ﻿@model IEnumerable<Issue>
 
 <div class="row clearfix">
-    <form class="form-horizontal" role="form" id="formLoadXml">
+    <form asp-action="UploadAsync" class="form-horizontal" role="form" id="formLoadXml" method="post" enctype="multipart/form-data">
         <div class="panel panel-default">
             <div class="panel-heading">Load ReSharp XML result</div>
             <div class="panel-body">
                 <div class="form-group">
                     <label for="xml" class="col-sm-3 control-label">File</label>
                     <div class="col-sm-5">
-                        <input type="file" id="xml" class="form-control" />
+                        <input type="file" id="xml" name="xml" class="form-control" />
+                        <span class="text-danger">@Html.ValidationMessage("xml")</span>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-9 col-lg-offset-3">
-                        <button type="button" class="btn btn-primary">Load</button>
+                        <button type="submit" class="btn btn-primary">Load</button>
                     </div>
                 </div>
             </div>
         </div>
     </form>
 
-    <form class="form-horizontal" role="form" id="formFilter">
-        <div class="panel panel-default">
-            <div class="panel-heading">Filter Issues</div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label for="categoryTypes" class="col-sm-3 control-label">Category types</label>
-                    <div class="col-sm-4">
-                        @Html.ListBox("categoryTypes", (IEnumerable<SelectListItem>)ViewBag.CategoryTypes, new { @class = "form-control" })
+    @if (Model != null)
+    {
+        <form class="form-horizontal" role="form" id="formFilter">
+            <div class="panel panel-default">
+                <div class="panel-heading">Filter Issues</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="categoryTypes" class="col-sm-3 control-label">Category types</label>
+                        <div class="col-sm-4">
+                            @Html.ListBox("categoryTypes", (IEnumerable<SelectListItem>)ViewBag.CategoryTypes, new { @class = "form-control" })
+                        </div>
+                        <label for="severities" class="col-sm-2 control-label">Severities</label>
+                        <div class="col-sm-2">
+                            @Html.ListBox("severities", (IEnumerable<SelectListItem>)ViewBag.Severities, new { @class = "form-control" })
+                        </div>
                     </div>
-                    <label for="severities" class="col-sm-2 control-label">Severities</label>
-                    <div class="col-sm-2">
-                        @Html.ListBox("severities", (IEnumerable<SelectListItem>)ViewBag.Severities, new { @class = "form-control" })
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="issueTypes" class="col-sm-3 control-label">Issue types</label>
-                    <div class="col-sm-7">
-                        @Html.ListBox("issueTypes", (IEnumerable<SelectListItem>)ViewBag.IssueTypes, new { @class = "form-control" })
+                    <div class="form-group">
+                        <label for="issueTypes" class="col-sm-3 control-label">Issue types</label>
+                        <div class="col-sm-7">
+                            @Html.ListBox("issueTypes", (IEnumerable<SelectListItem>)ViewBag.IssueTypes, new { @class = "form-control" })
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="xml" class="col-sm-3 control-label">File types</label>
-                    <div class="col-sm-5">
-                        @Html.ListBox("fileTypes", (IEnumerable<SelectListItem>)ViewBag.FileTypes, new { @class = "form-control" })
+                    <div class="form-group">
+                        <label for="xml" class="col-sm-3 control-label">File types</label>
+                        <div class="col-sm-5">
+                            @Html.ListBox("fileTypes", (IEnumerable<SelectListItem>)ViewBag.FileTypes, new { @class = "form-control" })
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <div class="col-sm-9 col-lg-offset-3">
-                        <button type="submit" class="btn btn-primary">Filter</button>
+                    <div class="form-group">
+                        <div class="col-sm-9 col-lg-offset-3">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                        </div>
                     </div>
                 </div>
             </div>
+        </form>
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            @{
+                var i = 0;
+                var projects = Model.Select(x => x.ProjectName).Distinct().ToList();
+                foreach (var project in projects)
+                {
+                    var issues = Model.Where(x => x.ProjectName == project).ToList();
+                    Html.RenderPartial("_Issue", new ViewDataDictionary(ViewData) { { "Issues", issues }, { "ProjectName", project }, { "Number", ++i} });
+                }
+            }
         </div>
-    </form>
-
-    @{ Html.RenderPartial("_Issue", Model);}
-
+     }
 </div>
